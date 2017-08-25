@@ -113,5 +113,25 @@ namespace OurFirstApi.Controllers
                 }
             }
         }
+        // DELETE api/values/5
+        public HttpResponseMessage Delete(int id)
+        {
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString))
+            {
+                connection.Open();
+
+                try
+                {
+                    var result = connection.Execute("Delete From Employee " +
+                                                          "Where EmployeeId = @EmployeeId",
+                                                            new { EmployeeId = id });
+                    return Request.CreateResponse(HttpStatusCode.Accepted);
+                }
+                catch (Exception ex)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                }
+            }
+        }
     }
 }
