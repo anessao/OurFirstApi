@@ -66,5 +66,52 @@ namespace OurFirstApi.Controllers
                 }
             }
         }
+
+        // POST api/employees/
+        public HttpResponseMessage Post(EmployeeListResult employee)
+        {
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    var results = connection.Execute("Insert into Employee(FirstName, LastName) " +
+                                                          "Values(@FirstName, @LastName)",
+                        new { FirstName = employee.FirstName, LastName = employee.LastName});
+                    return Request.CreateResponse(HttpStatusCode.Created);
+
+                }
+                catch (Exception ex)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                }
+            }
+        }
+
+        // PUT api/employees/5
+        public HttpResponseMessage Put(int id, EmployeeListResult employee)
+        {
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString))
+            {
+
+                try
+                {
+                    connection.Open();
+
+                    var rowsAffected = connection.Execute("Update Employee " +
+                                                            "SET LastName = @NewLastName " +
+                                                          "Where EmployeeId = @EmployeeId",
+                        new { EmployeeId = id, NewLastName = employee.LastName });
+                    return Request.CreateResponse(HttpStatusCode.Accepted);
+
+
+                }
+                catch (Exception ex)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                }
+            }
+        }
     }
 }
