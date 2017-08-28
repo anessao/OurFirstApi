@@ -10,7 +10,9 @@ namespace OurFirstApi.Controllers
     public class ValuesController : ApiController
     {
         // GET api/values
-        public IEnumerable<string> Get()
+        [HttpGet] //the get attribute allows you to name the function whatever you want
+        [Route("otherapi/zalues/")] //specify the template in the parameters
+        public IEnumerable<string> NotBasedOnAnything()
         {
             return new string[] { "value1", "value2" };
         }
@@ -38,6 +40,7 @@ namespace OurFirstApi.Controllers
         }
 
         // DELETE api/values/5
+        [HttpDelete, Route("{id}")]
         public void Delete(int id)
         {
         }

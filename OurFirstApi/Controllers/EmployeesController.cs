@@ -12,6 +12,7 @@ using OurFirstApi.Models;
 namespace OurFirstApi.Controllers
 {
     //api/employees
+    [HttpGet, Route("api/employee")] //-> route prefix, adds the prefix to the route attributes going forward
     public class EmployeesController : ApiController
     {
         //api/employees
@@ -40,6 +41,7 @@ namespace OurFirstApi.Controllers
         }
 
         //api/employees/3000
+        [HttpGet, Route("{id}")]
         public HttpResponseMessage Get(int id)
         {
             using (var connection =
@@ -114,6 +116,7 @@ namespace OurFirstApi.Controllers
             }
         }
         // DELETE api/values/5
+
         public HttpResponseMessage Delete(int id)
         {
             using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString))
@@ -126,6 +129,33 @@ namespace OurFirstApi.Controllers
                                                           "Where EmployeeId = @EmployeeId",
                                                             new { EmployeeId = id });
                     return Request.CreateResponse(HttpStatusCode.Accepted);
+                }
+                catch (Exception ex)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                }
+            }
+        }
+        [HttpGet, Route("{firstname}")]
+        public HttpResponseMessage Get(string firstname)
+        {
+            using (var connection =
+                new SqlConnection(ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    var result =
+                        connection.Query<EmployeeListResult>("Select * From Employee where FirstName = @firstname",
+                            new {firstname }).FirstOrDefault();
+
+                    if (result == null)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, $"Employee with the first name {firstname} was not found");
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 catch (Exception ex)
                 {
